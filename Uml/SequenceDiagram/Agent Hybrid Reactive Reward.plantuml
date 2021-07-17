@@ -1,0 +1,50 @@
+@startuml
+
+title Reactive / Active Agent Implementations
+
+entity External
+box "Agent"
+  participant Interface 
+  participant Collector
+  participant Trainer
+  participant Selector 
+end box
+
+alt HYBRID - Active with Reactive reward
+  External    <- Interface : getCurrentStateActions()
+  External   --> Interface : ( state, actions )
+  Interface   -> Collector : getStateActions( state, actions )
+  Collector   -> Collector : getState( state )
+
+  alt In Collector
+    Collector   -> Collector : updateActionsAvailable( State, actions )
+  else NOT in Collector
+    Collector   -> Collector : initialiseState( state, actions )
+  end
+
+  Interface    <-- Collector : State
+  Interface     -> Selector  : selectAction( State, actions )
+  Interface    <-- Selector  : action
+  Interface     -> Trainer   : actionSelected( State, action )
+  Interface    <-- Trainer
+
+  alt REACTIVE - Reward Feedback
+    External    -> Interface : reward( state, action, reward )
+    Interface   -> Collector : getStateActions( state, action )
+    Collector   -> Collector : getState( state )
+
+    alt In Collector
+      Collector   -> Collector : updateActionsAvailable( State, action )
+    else NOT in Collector
+      Collector   -> Collector : initialiseState( state, action )
+    end
+
+    Interface    <-- Collector : State
+    Interface     -> Trainer   : updateReward( State, action, reward )
+    Interface    <-- Trainer   : States
+    Interface    ->  Collector : updateStates( States )
+    External     <-- Collector
+  end 
+end
+
+@enduml
