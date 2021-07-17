@@ -1,6 +1,6 @@
 @startuml
 
-title Reactive / Active Agent Implementations
+title Active Agent with Active reward
 
 entity External
 box "Agent"

@@ -1,6 +1,6 @@
 @startuml
 
-title Reactive / Active Agent Implementations
+title Active Agent with Reactive Reward
 
 entity External
 box "Agent"
@@ -10,8 +10,9 @@ box "Agent"
   participant Selector 
 end box
 
-alt REACTIVE
-  External    -> Interface : getAction( state, actions )
+alt ACTIVE
+  External    <- Interface : getCurrentStateActions()
+  External   --> Interface : ( state, actions )
   Interface   -> Collector : getStateActions( state, actions )
   Collector   -> Collector : getState( state )
 
@@ -25,8 +26,7 @@ alt REACTIVE
   Interface     -> Selector  : selectAction( State, actions )
   Interface    <-- Selector  : action
   Interface     -> Trainer   : actionSelected( State, action )
-  Interface    <-- Trainer
-  External     <-- Interface : action
+  External     <-- Trainer
 
   alt REACTIVE - Reward Feedback
     External    -> Interface : reward( state, action, reward )
