@@ -3,18 +3,22 @@
 title Active Agent with Active reward
 
 entity External
+
 box "Agent"
-  participant Interface 
-  participant Collector
-  participant Trainer
-  participant Selector 
+  participant ActionInterface 
+  participant RewardInterface 
 end box
 
+box "Workers"
+  participant Selector 
+  participant Trainer
+  participant Collector
+end box
 
 alt ACTIVE
-  External    <- Interface : getCurrentStateActions()
-  External   --> Interface : ( state, actions )
-  Interface   -> Collector : getStateActions( state, actions )
+  External    <- ActionInterface : getCurrentStateActions()
+  External   --> ActionInterface : ( state, actions )
+  ActionInterface   -> Collector : getStateActions( state, actions )
   Collector   -> Collector : getState( state )
 
   alt In Collector
@@ -23,16 +27,16 @@ alt ACTIVE
     Collector   -> Collector : initialiseState( state, actions )
   end
 
-  Interface    <-- Collector : State
-  Interface     -> Selector  : selectAction( State, actions )
-  Interface    <-- Selector  : action
-  Interface     -> Trainer   : actionSelected( State, action )
-  Interface    <-- Trainer
-  External      <- Interface : getReward( state, action )
-  External     --> Interface : reward
-  Interface     -> Trainer   : updateReward( State, action, reward )
-  Interface    <-- Trainer   : States
-  Interface    ->  Collector : updateStates( States )
+  ActionInterface    <-- Collector : State
+  ActionInterface     -> Selector  : selectAction( State, actions )
+  ActionInterface    <-- Selector  : action
+  ActionInterface     -> Trainer   : actionSelected( State, action )
+  RewardInterface    <-- Trainer
+  External      <- RewardInterface : getReward( state, action )
+  External     --> RewardInterface : reward
+  RewardInterface     -> Trainer   : updateReward( State, action, reward )
+  RewardInterface    <-- Trainer   : States
+  RewardInterface    ->  Collector : updateStates( States )
   External     <-- Collector 
 end
 

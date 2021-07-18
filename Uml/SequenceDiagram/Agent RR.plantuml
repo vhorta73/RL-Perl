@@ -3,16 +3,21 @@
 title Reactive Agent with Reactive Reward
 
 entity External
+
 box "Agent"
-  participant Interface 
+  participant ActionInterface 
+  participant RewardInterface 
+end box
+
+box "Workers"
   participant Collector
   participant Trainer
   participant Selector 
 end box
 
 alt REACTIVE
-  External    -> Interface : getAction( state, actions )
-  Interface   -> Collector : getStateActions( state, actions )
+  External    -> ActionInterface : getAction( state, actions )
+  ActionInterface   -> Collector : getStateActions( state, actions )
   Collector   -> Collector : getState( state )
 
   alt In Collector
@@ -21,16 +26,16 @@ alt REACTIVE
     Collector   -> Collector : initialiseState( state, actions )
   end
 
-  Interface    <-- Collector : State
-  Interface     -> Selector  : selectAction( State, actions )
-  Interface    <-- Selector  : action
-  Interface     -> Trainer   : actionSelected( State, action )
-  Interface    <-- Trainer
-  External     <-- Interface : action
+  ActionInterface    <-- Collector : State
+  ActionInterface     -> Selector  : selectAction( State, actions )
+  ActionInterface    <-- Selector  : action
+  ActionInterface     -> Trainer   : actionSelected( State, action )
+  ActionInterface    <-- Trainer
+  External     <-- ActionInterface : action
 
   alt REACTIVE - Reward Feedback
-    External    -> Interface : reward( state, action, reward )
-    Interface   -> Collector : getStateActions( state, action )
+    External    -> RewardInterface : reward( state, action, reward )
+    RewardInterface   -> Collector : getStateActions( state, action )
     Collector   -> Collector : getState( state )
 
     alt In Collector
@@ -39,10 +44,10 @@ alt REACTIVE
       Collector   -> Collector : initialiseState( state, action )
     end
 
-    Interface    <-- Collector : State
-    Interface     -> Trainer   : updateReward( State, action, reward )
-    Interface    <-- Trainer   : States
-    Interface    ->  Collector : updateStates( States )
+    RewardInterface    <-- Collector : State
+    RewardInterface     -> Trainer   : updateReward( State, action, reward )
+    RewardInterface    <-- Trainer   : States
+    RewardInterface    ->  Collector : updateStates( States )
     External     <-- Collector
   end 
 end
