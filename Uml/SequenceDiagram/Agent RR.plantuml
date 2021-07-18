@@ -32,24 +32,24 @@ alt
   ActionInterface     -> Trainer         : actionSelected( State, action )
   ActionInterface    <-- Trainer
   External           <-- ActionInterface : action
+end
 
-  alt 
-    External          -> RewardInterface : reward( state, action, reward )
-    RewardInterface   -> Collector       : getStateActions( state, action )
-    Collector         -> Collector       : getState( state )
+alt 
+  External          -> RewardInterface   : reward( state, action, reward )
+  RewardInterface   -> Collector         : getStateActions( state, action )
+  Collector         -> Collector         : getState( state )
 
-    alt In Collector
-      Collector   -> Collector           : updateActionsAvailable( State, action )
-    else
-      Collector   -> Collector           : initialiseState( state, action )
-    end
+  alt In Collector
+    Collector   -> Collector             : updateActionsAvailable( State, action )
+  else
+    Collector   -> Collector             : initialiseState( state, action )
+  end
 
-    RewardInterface    <-- Collector     : State
-    RewardInterface     -> Trainer       : updateReward( State, action, reward )
-    RewardInterface    <-- Trainer       : States
-    RewardInterface     -> Collector     : updateStates( States )
-    External           <-- Collector
-  end 
+  RewardInterface    <-- Collector       : State
+  RewardInterface     -> Trainer         : updateReward( State, action, reward )
+  RewardInterface    <-- Trainer         : States
+  RewardInterface     -> Collector       : updateStates( States )
+  External           <-- Collector
 end
 
 @enduml
