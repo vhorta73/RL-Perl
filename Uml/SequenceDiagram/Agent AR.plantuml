@@ -1,6 +1,6 @@
 @startuml
 
-title Active Agent with Reactive Reward
+title Active / Reactive Agent
 
 entity External
 
@@ -15,7 +15,7 @@ box "Workers"
   participant Selector 
 end box
 
-alt ACTIVE
+alt
   External          <- ActionInterface : getCurrentStateActions()
   External         --> ActionInterface : ( state, actions )
   ActionInterface   -> Collector : getStateActions( state, actions )
@@ -23,7 +23,7 @@ alt ACTIVE
 
   alt In Collector
     Collector   -> Collector : updateActionsAvailable( State, actions )
-  else NOT in Collector
+  else
     Collector   -> Collector : initialiseState( state, actions )
   end
 
@@ -33,14 +33,14 @@ alt ACTIVE
   ActionInterface     -> Trainer   : actionSelected( State, action )
   External           <-- Trainer
 
-  alt REACTIVE - Reward Feedback
+  alt
     External         -> RewardInterface : reward( state, action, reward )
     RewardInterface  -> Collector : getStateActions( state, action )
     Collector        -> Collector : getState( state )
 
     alt In Collector
       Collector   -> Collector : updateActionsAvailable( State, action )
-    else NOT in Collector
+    else
       Collector   -> Collector : initialiseState( state, action )
     end
 

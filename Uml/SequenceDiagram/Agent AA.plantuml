@@ -1,6 +1,6 @@
 @startuml
 
-title Active Agent with Active reward
+title Active / Active Agent 
 
 entity External
 
@@ -15,7 +15,7 @@ box "Workers"
   participant Collector
 end box
 
-alt ACTIVE
+alt 
   External          <- ActionInterface : getCurrentStateActions()
   External         --> ActionInterface : ( state, actions )
   ActionInterface   -> Collector : getStateActions( state, actions )
@@ -23,7 +23,7 @@ alt ACTIVE
 
   alt In Collector
     Collector   -> Collector : updateActionsAvailable( State, actions )
-  else NOT in Collector
+  else
     Collector   -> Collector : initialiseState( state, actions )
   end
 
