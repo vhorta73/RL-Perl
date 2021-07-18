@@ -16,38 +16,38 @@ box "Workers"
 end box
 
 alt
-  External          <- ActionInterface : getCurrentStateActions()
-  External         --> ActionInterface : ( state, actions )
-  ActionInterface   -> Collector : getStateActions( state, actions )
-  Collector         -> Collector : getState( state )
+  External          <- ActionInterface  : getCurrentStateActions()
+  External         --> ActionInterface  : ( state, actions )
+  ActionInterface   -> Collector        : getStateActions( state, actions )
+  Collector         -> Collector        : getState( state )
 
   alt In Collector
-    Collector   -> Collector : updateActionsAvailable( State, actions )
+    Collector   -> Collector            : updateActionsAvailable( State, actions )
   else
-    Collector   -> Collector : initialiseState( state, actions )
+    Collector   -> Collector            : initialiseState( state, actions )
   end
 
-  ActionInterface    <-- Collector : State
-  ActionInterface     -> Selector  : selectAction( State, actions )
-  ActionInterface    <-- Selector  : action
-  ActionInterface     -> Trainer   : actionSelected( State, action )
+  ActionInterface    <-- Collector      : State
+  ActionInterface     -> Selector       : selectAction( State, actions )
+  ActionInterface    <-- Selector       : action
+  ActionInterface     -> Trainer        : actionSelected( State, action )
   External           <-- Trainer
 
   alt
     External         -> RewardInterface : reward( state, action, reward )
-    RewardInterface  -> Collector : getStateActions( state, action )
-    Collector        -> Collector : getState( state )
+    RewardInterface  -> Collector       : getStateActions( state, action )
+    Collector        -> Collector       : getState( state )
 
     alt In Collector
-      Collector   -> Collector : updateActionsAvailable( State, action )
+      Collector   -> Collector          : updateActionsAvailable( State, action )
     else
-      Collector   -> Collector : initialiseState( state, action )
+      Collector   -> Collector          : initialiseState( state, action )
     end
 
-    RewardInterface  <-- Collector : State
-    RewardInterface   -> Trainer   : updateReward( State, action, reward )
-    RewardInterface  <-- Trainer   : States
-    RewardInterface   -> Collector : updateStates( States )
+    RewardInterface  <-- Collector      : State
+    RewardInterface   -> Trainer        : updateReward( State, action, reward )
+    RewardInterface  <-- Trainer        : States
+    RewardInterface   -> Collector      : updateStates( States )
     External         <-- Collector
   end 
 end
