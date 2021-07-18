@@ -16,10 +16,10 @@ box "Workers"
 end box
 
 alt ACTIVE
-  External    <- ActionInterface : getCurrentStateActions()
-  External   --> ActionInterface : ( state, actions )
+  External          <- ActionInterface : getCurrentStateActions()
+  External         --> ActionInterface : ( state, actions )
   ActionInterface   -> Collector : getStateActions( state, actions )
-  Collector   -> Collector : getState( state )
+  Collector         -> Collector : getState( state )
 
   alt In Collector
     Collector   -> Collector : updateActionsAvailable( State, actions )
@@ -31,12 +31,12 @@ alt ACTIVE
   ActionInterface     -> Selector  : selectAction( State, actions )
   ActionInterface    <-- Selector  : action
   ActionInterface     -> Trainer   : actionSelected( State, action )
-  External     <-- Trainer
+  External           <-- Trainer
 
   alt REACTIVE - Reward Feedback
-    External    -> RewardInterface : reward( state, action, reward )
-    RewardInterface   -> Collector : getStateActions( state, action )
-    Collector   -> Collector : getState( state )
+    External         -> RewardInterface : reward( state, action, reward )
+    RewardInterface  -> Collector : getStateActions( state, action )
+    Collector        -> Collector : getState( state )
 
     alt In Collector
       Collector   -> Collector : updateActionsAvailable( State, action )
@@ -44,11 +44,11 @@ alt ACTIVE
       Collector   -> Collector : initialiseState( state, action )
     end
 
-    RewardInterface    <-- Collector : State
-    RewardInterface     -> Trainer   : updateReward( State, action, reward )
-    RewardInterface    <-- Trainer   : States
-    RewardInterface    ->  Collector : updateStates( States )
-    External     <-- Collector
+    RewardInterface  <-- Collector : State
+    RewardInterface   -> Trainer   : updateReward( State, action, reward )
+    RewardInterface  <-- Trainer   : States
+    RewardInterface   -> Collector : updateStates( States )
+    External         <-- Collector
   end 
 end
 
